@@ -1,9 +1,11 @@
-import openai
-import os
+import google.generativeai as genai
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
-client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+model = genai.GenerativeModel("gemini-pro")
 
 def generate_summary(metrics):
     prompt = f"""
@@ -16,12 +18,5 @@ def generate_summary(metrics):
     Write a clear, professional summary for a board slide. Mention 1–2 insights and 1 strategic recommendation.
     """
 
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",  # or "gpt-3.5-turbo"
-        messages=[
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7,
-    )
-
-    return response.choices[0].message.content.strip()
+    response = model.generate_content(prompt)
+    return response.text.strip()
