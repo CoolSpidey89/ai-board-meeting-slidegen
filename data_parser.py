@@ -16,7 +16,8 @@ def parse_file(file):
         return parse_pdf_reviews(file), None
 
     else:
-        raise ValueError("Unsupported file format.")
+        raise ValueError("Unsupported file format. Please upload .csv, .xlsx, or .pdf")
+
 
 def parse_financial_df(df):
     required_cols = ['Revenue', 'Cost', 'Churn', 'Region', 'Month']
@@ -39,18 +40,23 @@ def parse_financial_df(df):
 
     return metrics
 
+
 def parse_pdf_reviews(file):
-    with pdfplumber.open(file) as pdf:
-        all_text = ""
-        for page in pdf.pages:
-            text = page.extract_text()
-            if text:
-                all_text += text + "\n"
+    try:
+        with pdfplumber.open(file) as pdf:
+            all_text = ""
+            for page in pdf.pages:
+                text = page.extract_text()
+                if text:
+                    all_text += text + "\n"
 
-    cleaned_text = all_text.strip()
-    if not cleaned_text:
-        raise ValueError("No text could be extracted from the PDF.")
+        cleaned_text = all_text.strip()
+        if not cleaned_text:
+            raise ValueError("No text could be extracted from the PDF.")
 
-    return {
-        'user_reviews': cleaned_text
-    }
+        return {
+            'user_reviews': cleaned_text
+        }
+
+    except Exception as e:
+        raise ValueError(f"PDF parsing failed: {str(e)}")
