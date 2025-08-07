@@ -3,36 +3,33 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    raise EnvironmentError("GEMINI_API_KEY not found in environment variables.")
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-genai.configure(api_key=api_key)
-model = genai.GenerativeModel("models/gemini-1.5-flash")
-
+model = genai.GenerativeModel("models/gemini-pro")  # Ensure correct model name
 
 def generate_summary(metrics):
     prompt = f"""
-    You're a business analyst creating an executive summary based on the following metrics:
+    You're a business analyst preparing a short executive summary for a board slide. 
+    Based on the metrics below, write a **clear, concise, professional summary under 80 words.**
+    
     - Total Revenue: ₹{metrics['total_revenue']}
     - Total Cost: ₹{metrics['total_cost']}
     - Average Churn Rate: {metrics['avg_churn']}%
-    - Active Regions: {', '.join(metrics['regions'][:5])}{' and more' if len(metrics['regions']) > 5 else ''}
-
-    Write a clear, professional summary for a board slide. Mention 1–2 insights and 1 strategic recommendation.
+    - Active Regions: {', '.join(metrics['regions'])}
+    
+    Mention 1–2 insights and 1 recommendation.
     """
-
     response = model.generate_content(prompt)
-    return response.text.strip()
+    return response.text.strip()[:600]  # Truncate if needed
 
 def generate_summary_from_reviews(review_text):
     prompt = f"""
-    The following are customer/user reviews collected over the last quarter:
+    You're analyzing customer feedback from the following reviews:
 
-    {review_text[:8000]}
+    {review_text[:2000]}
 
-    Summarize the major sentiments, highlight common issues, and recommend one improvement strategy.
+    Provide a **short and clear summary under 80 words** suitable for an executive slide.
+    Highlight key sentiments and 1 major recommendation.
     """
-
     response = model.generate_content(prompt)
-    return response.text.strip()
+    return response.text.strip()[:600]  # Truncate if needed
