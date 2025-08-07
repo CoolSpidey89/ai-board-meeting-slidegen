@@ -12,12 +12,6 @@ This is a Streamlit-based AI tool that turns Excel financial data into polished 
 
 ---
 
-## 📽️ Demo
-
-https://user-images.githubusercontent.com/demo-gif.gif  
-(*Replace with your own screen recording or Loom link*)
-
----
 
 ## 🔧 Tech Stack
 
