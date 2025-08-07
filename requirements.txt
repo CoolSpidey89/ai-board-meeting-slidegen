@@ -3,5 +3,5 @@ pandas
 openpyxl
 matplotlib
 python-pptx
-openai
+google-generativeai
 python-dotenv
