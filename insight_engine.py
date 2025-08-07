@@ -21,8 +21,17 @@ def generate_summary(metrics):
     Write a clear, professional summary for a board slide. Mention 1–2 insights and 1 strategic recommendation.
     """
 
-    try:
-        response = model.generate_content(prompt)
-        return response.text.strip()
-    except Exception as e:
-        return f"❌ Gemini Error: {str(e)}"
+    response = model.generate_content(prompt)
+    return response.text.strip()
+
+def generate_summary_from_reviews(review_text):
+    prompt = f"""
+    The following are customer/user reviews collected over the last quarter:
+
+    {review_text[:8000]}
+
+    Summarize the major sentiments, highlight common issues, and recommend one improvement strategy.
+    """
+
+    response = model.generate_content(prompt)
+    return response.text.strip()
