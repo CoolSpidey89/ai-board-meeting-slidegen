@@ -8,7 +8,8 @@ if not api_key:
     raise EnvironmentError("GEMINI_API_KEY not found in environment variables.")
 
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel("gemini-pro")
+model = genai.GenerativeModel("models/gemini-1.5-flash")
+
 
 def generate_summary(metrics):
     prompt = f"""
