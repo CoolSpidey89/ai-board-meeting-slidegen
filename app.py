@@ -2,9 +2,9 @@ import streamlit as st
 from data_parser import parse_excel
 from insight_engine import generate_summary
 from ppt_generator import create_ppt
+import time
 
 st.set_page_config(page_title="AI Board Slide Generator", layout="centered")
-
 st.title("📊 AI Board Meeting Slide Generator")
 st.markdown("Upload your Excel file, and get an executive-ready PPT deck in seconds.")
 
@@ -17,7 +17,16 @@ if uploaded_file:
         with st.spinner("Processing..."):
             try:
                 metrics, df = parse_excel(uploaded_file)
-                summary = generate_summary(metrics)
+
+                st.info("🧠 Generating executive summary using Gemini...")
+                start = time.time()
+                try:
+                    summary = generate_summary(metrics)
+                    if time.time() - start > 15:
+                        raise TimeoutError("Gemini took too long to respond.")
+                except Exception as gen_error:
+                    summary = f"⚠️ Summary could not be generated: {str(gen_error)}"
+
                 ppt_path = create_ppt(metrics, summary, metrics["monthly_data"])
 
                 st.success("🎉 Slide deck created successfully!")
@@ -33,3 +42,5 @@ if uploaded_file:
 
             except Exception as e:
                 st.error(f"⚠️ Error: {e}")
+
+
