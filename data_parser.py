@@ -43,8 +43,14 @@ def parse_pdf_reviews(file):
     with pdfplumber.open(file) as pdf:
         all_text = ""
         for page in pdf.pages:
-            all_text += page.extract_text() + "\n"
+            text = page.extract_text()
+            if text:
+                all_text += text + "\n"
+
+    cleaned_text = all_text.strip()
+    if not cleaned_text:
+        raise ValueError("No text could be extracted from the PDF.")
 
     return {
-        'user_reviews': all_text.strip()
+        'user_reviews': cleaned_text
     }
