@@ -1,0 +1,13 @@
+# API key
+.env
+
+# Output file
+Board_Meeting_Slides.pptx
+
+# Charts and temp folders
+assets/
+__pycache__/
+*.pyc
+
+# Optional: if using venv
+venv/
