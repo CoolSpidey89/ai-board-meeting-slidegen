@@ -2,6 +2,8 @@ from pptx import Presentation
 from pptx.util import Inches
 import matplotlib.pyplot as plt
 import os
+import tempfile
+import shutil
 
 def create_ppt(metrics, summary, monthly_df):
     prs = Presentation()
@@ -17,21 +19,23 @@ def create_ppt(metrics, summary, monthly_df):
     slide = prs.slides.add_slide(bullet_slide_layout)
     slide.shapes.title.text = "Executive Summary"
     content = slide.placeholders[1]
-    for line in summary.splitlines():
-        if line.strip():
-            content.text += f"\n{line.strip()}"
+    summary_lines = summary.strip().splitlines()
+    content.text = summary_lines[0] if summary_lines else ""
+    for line in summary_lines[1:]:
+        content.text += f"\n{line.strip()}"
+
+    # Create temporary directory for charts
+    assets_dir = tempfile.mkdtemp()
 
     # Slide 3: Revenue Chart
-    chart_path = "assets/revenue_chart.png"
-    os.makedirs("assets", exist_ok=True)
-
+    chart_path = os.path.join(assets_dir, "revenue_chart.png")
     plt.figure()
     plt.plot(monthly_df['Month'], monthly_df['Revenue'], marker='o')
     plt.title("Monthly Revenue")
     plt.xlabel("Month")
     plt.ylabel("Revenue")
     plt.tight_layout()
-    plt.savefig(chart_path)
+    plt.savefig(chart_path, dpi=80)
     plt.close()
 
     slide = prs.slides.add_slide(bullet_slide_layout)
@@ -39,14 +43,14 @@ def create_ppt(metrics, summary, monthly_df):
     slide.shapes.add_picture(chart_path, Inches(1), Inches(1.5), width=Inches(6))
 
     # Slide 4: Cost Chart
-    cost_chart_path = "assets/cost_chart.png"
+    cost_chart_path = os.path.join(assets_dir, "cost_chart.png")
     plt.figure()
     plt.bar(monthly_df['Month'], monthly_df['Cost'], color='orange')
     plt.title("Monthly Costs")
     plt.xlabel("Month")
     plt.ylabel("Cost")
     plt.tight_layout()
-    plt.savefig(cost_chart_path)
+    plt.savefig(cost_chart_path, dpi=80)
     plt.close()
 
     slide = prs.slides.add_slide(bullet_slide_layout)
@@ -54,14 +58,14 @@ def create_ppt(metrics, summary, monthly_df):
     slide.shapes.add_picture(cost_chart_path, Inches(1), Inches(1.5), width=Inches(6))
 
     # Slide 5: Churn Chart
-    churn_chart_path = "assets/churn_chart.png"
+    churn_chart_path = os.path.join(assets_dir, "churn_chart.png")
     plt.figure()
     plt.plot(monthly_df['Month'], monthly_df['Churn'], marker='x', color='red')
     plt.title("Churn Rate")
     plt.xlabel("Month")
     plt.ylabel("Churn (%)")
     plt.tight_layout()
-    plt.savefig(churn_chart_path)
+    plt.savefig(churn_chart_path, dpi=80)
     plt.close()
 
     slide = prs.slides.add_slide(bullet_slide_layout)
@@ -70,5 +74,8 @@ def create_ppt(metrics, summary, monthly_df):
 
     output_path = "Board_Meeting_Slides.pptx"
     prs.save(output_path)
+
+    # Clean up chart images
+    shutil.rmtree(assets_dir)
 
     return output_path
