@@ -17,7 +17,7 @@ def generate_summary(metrics):
     """
 
     response = client.chat.completions.create(
-        model="gpt-4",  # or "gpt-3.5-turbo"
+        model="gpt-3.5-turbo",  # or "gpt-3.5-turbo"
         messages=[
             {"role": "user", "content": prompt}
         ],
